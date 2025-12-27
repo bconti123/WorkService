@@ -50,10 +50,21 @@ app.MapPatch("/api/work-items/{id:int}/done", async (AppDbContext db, int id) =>
 });
 
 // Run EF migrations at startup (simple approach)
-using (var scope = app.Services.CreateScope())
+// using (var scope = app.Services.CreateScope())
+// {
+//     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//     await db.Database.MigrateAsync();
+// }
+
+try
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
+}
+catch (Exception ex)
+{
+    app.Logger.LogError(ex, "Database migration failed; continuing to start API.");
 }
 
 app.Run();
