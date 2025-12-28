@@ -1,0 +1,43 @@
+name: Deploy WorkService to Azure Container Apps
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set image tag
+        id: vars
+        run: echo "TAG=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+      - name: ACR Login
+        run: az acr login --name "${{ secrets.AZURE_ACR_NAME }}"
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE="${{ secrets.AZURE_ACR_LOGIN_SERVER }}/workservice-api:${{ steps.vars.outputs.TAG }}"
+          docker build -t "$IMAGE" -f WorkService.Api/Dockerfile .
+          docker push "$IMAGE"
+          echo "IMAGE=$IMAGE" >> $GITHUB_OUTPUT
+        id: image
+
+      - name: Deploy to Container Apps (new revision)
+        run: |
+          az containerapp update \
+            -g "${{ secrets.AZURE_RESOURCE_GROUP }}" \
+            -n "${{ secrets.AZURE_CONTAINERAPP_NAME }}" \
+            --image "${{ steps.image.outputs.IMAGE }}"
