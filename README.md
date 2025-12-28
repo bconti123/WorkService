@@ -30,6 +30,7 @@ This project demonstrates end-to-end ownership: local development, containerizat
 
 ## 📁 Project Structure
 
+```bash
 WorkService/
 ├── WorkService.Api/
 │   ├── Data/
@@ -43,7 +44,7 @@ WorkService/
 │       └── deploy-containerapp.yml
 ├── WorkService.sln
 └── README.md
-
+```
 
 ---
 
