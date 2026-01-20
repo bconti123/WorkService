@@ -6,12 +6,13 @@ This project demonstrates end-to-end ownership: local development, containerizat
 
 ---
 
-## 🚀 Live Deployment
+## 🚀 Deployment (Previously Live)
 
 - **Platform:** Azure Container Apps (Consumption)
 - **Ingress:** External HTTPS
 - **Database:** Azure SQL Database (Serverless)
 - **CI/CD:** GitHub Actions (auto deploy on `main` + manual dispatch)
+- **Status:** Currently offline to avoid cloud costs
 
 ---
 
@@ -69,3 +70,17 @@ Example POST body:
   "title": "My first work item"
 }
 ```
+
+---
+
+## 🔁 Redeploy Instructions
+
+This service can be redeployed by:
+
+1. Re-enabling Azure resources (SQL + Container App)
+2. Updating secrets in Azure Container Apps
+3. Running the GitHub Actions workflow:
+   - `deploy-containerapp.yml`
+   - or pushing to `main`
+
+The pipeline builds the Docker image, pushes to ACR, and deploys automatically.
